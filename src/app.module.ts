@@ -8,6 +8,14 @@ import { PaymentsModule } from './payments/payments.module';
 import { PaymentsMethodsModule } from './payments-methods/payments-methods.module';
 import { PointSaleModule } from './point-sale/point-sale.module';
 import { PaymentsDetailsModule } from './payments-details/payments-details.module';
+import { Category } from './categories/entities/category.entity';
+import { Product } from './products/entities/product.entity';
+import { Sale } from './sales/entities/sale.entity';
+import { SalesDetail } from './sales-details/entities/sales-detail.entity';
+import { PointSale } from './point-sale/entities/point-sale.entity';
+import { Payment } from './payments/entities/payment.entity';
+import { PaymentsDetail } from './payments-details/entities/payments-detail.entity';
+import { PaymentsMethod } from './payments-methods/entities/payments-method.entity';
 
 @Module({
   imports: [
@@ -19,7 +27,7 @@ import { PaymentsDetailsModule } from './payments-details/payments-details.modul
       username: 'postgres',
       password: '',
       database: 'tauri-backend',
-      entities: [],
+      entities: [Category, Product, Sale, SalesDetail, PointSale, Payment, PaymentsDetail, PaymentsMethod],
       autoLoadEntities: true,
       synchronize: true,
     }),

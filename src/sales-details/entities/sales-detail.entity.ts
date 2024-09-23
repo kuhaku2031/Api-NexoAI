@@ -17,7 +17,7 @@ export class SalesDetail {
 
     @ManyToOne(() => Sale, (sale) => sale.salesDetail)
     @JoinColumn({ name: 'sale_id' })
-    sale_id: Sale;
+    sale: number;
   
     @Column({ type: 'jsonb' })
     product: any;

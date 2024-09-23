@@ -1,10 +1,12 @@
 import { SalesDetailsService } from './../sales-details/sales-details.service';
 import { PointSaleService } from './../point-sale/point-sale.service';
 import { Injectable } from '@nestjs/common';
-import { CreateSaleDto } from './dto/create-sale.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Sale } from './entities/sale.entity';
 import { Repository } from 'typeorm';
+import { CreateSaleWithPaymentDto } from './dto/create-sale-with-payment.dto';
+import { PaymentsDetailsService } from 'src/payments-details/payments-details.service';
+import { Payment } from 'src/payments/entities/payment.entity';
 
 @Injectable()
 export class SalesService {
@@ -15,48 +17,94 @@ export class SalesService {
     private readonly salesDetailsService: SalesDetailsService,
 
     private readonly pointSaleService: PointSaleService,
+
+    @InjectRepository(Payment)
+    private readonly paymentRepository: Repository<Payment>,
+
+    private readonly paymentDetailsService: PaymentsDetailsService,
   ) {}
-  async create(createSaleDto: CreateSaleDto): Promise<Sale> {
+  async createSale(
+    createSaleWithPaymentDto: CreateSaleWithPaymentDto,
+  ): Promise<any> {
+    const { saleData, paymentData } = createSaleWithPaymentDto;
+
     try {
-      const { product, ...saleData } = createSaleDto;
+      return await this.saleRepository.manager.transaction(
+        async (transactionalEntityManager) => {
+          
+          // Buscar la entidad PointSale
+          const pointSaleEntity = await this.pointSaleService.findOnePointSale(
+            saleData.point_sale,
+          );
 
-      // Buscar la entidad PointSale
-      const pointSaleEntity = await this.pointSaleService.findOnePointSale(
-        createSaleDto.point_sale,
+          if (!pointSaleEntity) {
+            throw new Error('PointSale not found');
+          }
+
+          // Crear la venta
+          const sale = this.saleRepository.create({
+            ...saleData,
+            point_sale: pointSaleEntity,
+            product: saleData.product,
+          });
+          await transactionalEntityManager.save(sale);
+
+          // Crear los detalles de la venta
+          const salesDetailsDtos = saleData.product.map((product) => ({
+            code: product.code,
+            quantity: product.quantity,
+            selling_price: product.selling_price,
+            sale: sale.sale_id,
+            product: product,
+          }));
+
+          await this.salesDetailsService.createSaleDetail(
+            salesDetailsDtos,
+            transactionalEntityManager,
+          );
+
+          const saleConfirmExisting = await transactionalEntityManager.findOne(
+            Sale,
+            {
+              where: { sale_id: sale.sale_id },
+            },
+          );
+          if (!saleConfirmExisting) {
+            throw new Error('Sale not found');
+          } else {
+            console.log(sale.sale_id)
+          }
+
+          // Crear el pago
+          const payment = this.paymentRepository.create({
+            ...paymentData,
+            point_sale: pointSaleEntity,
+            sale_id: sale.sale_id,
+            paymentDetail: paymentData.paymentDetail,
+          });
+          await transactionalEntityManager.save(payment);
+
+          if (saleConfirmExisting) {
+            console.log(payment)
+            console.log(payment.payment_id)
+          }
+
+          const paymentDetailsDtos = payment.paymentDetail.map(
+            (paymentDetail) => ({
+              payment_method: paymentDetail.payment_method,
+              total_amount: paymentDetail.total_amount,
+              payment: payment.payment_id,
+            }),
+          );
+
+          await this.paymentDetailsService.createPaymentDeatils(
+            paymentDetailsDtos,
+            transactionalEntityManager,
+          );
+
+          return {sale, payment};
+        },
       );
-
-      if (!pointSaleEntity) {
-        throw new Error('PointSale not found');
-      }
-
-      // Crear la venta
-      const sale = this.saleRepository.create({
-        ...saleData,
-        point_sale: pointSaleEntity,
-        product: product,
-      });
-      await this.saleRepository.save(sale);
-
-      if (!product) {
-        console.log(product);
-      } else {
-        console.log(product);
-      }
-
-      // Crear los detalles de la venta
-      const salesDetailsDtos = product.map((product) => ({
-        code: product.code,
-        quantity: product.quantity,
-        selling_price: product.selling_price,
-        sale_id: sale.sale_id,
-        product: product,
-      }));
-
-      await this.salesDetailsService.createSaleDetail(salesDetailsDtos);
-
-      // Guardar y retornar la venta con los detalles
-      const savedSale = await this.saleRepository.save(sale);
-      return savedSale;
     } catch (error) {
       console.error(error);
       throw new Error('Error creating sale');
@@ -64,6 +112,7 @@ export class SalesService {
   }
 
   async findAll() {
+    
     return await this.saleRepository.find();
   }
 

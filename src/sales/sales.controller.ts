@@ -1,15 +1,15 @@
 import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { SalesService } from './sales.service';
-import { CreateSaleDto } from './dto/create-sale.dto';
 import { Sale } from './entities/sale.entity';
+import { CreateSaleWithPaymentDto } from './dto/create-sale-with-payment.dto';
 
 @Controller('sales')
 export class SalesController {
   constructor(private readonly salesService: SalesService) {}
 
   @Post()
-  async create(@Body() createSaleDto: CreateSaleDto): Promise<Sale> {
-    return this.salesService.create(createSaleDto);
+  async create(@Body() createSaleWithPaymentDto: CreateSaleWithPaymentDto): Promise<Sale> {
+    return this.salesService.createSale(createSaleWithPaymentDto);
   }
 
   @Get()

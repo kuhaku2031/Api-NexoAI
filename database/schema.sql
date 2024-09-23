@@ -42,7 +42,7 @@ CREATE TABLE DetallesVentas (
     FOREIGN KEY (producto_id) REFERENCES Productos(id)
 );
 
-CREATE TABLE Pagos (
+CREATE TABLE Pagos (    
     id SERIAL PRIMARY KEY,
     venta_id INT,
     monto_total NUMERIC(10, 2) NOT NULL,
