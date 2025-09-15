@@ -7,10 +7,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class PointSaleService {
+
   constructor(
     @InjectRepository(PointSale)
     private readonly pointSaleRepository: Repository<PointSale>,
   ) {}
+  
   async create(createPointSaleDto: CreatePointSaleDto) {
     const point = this.pointSaleRepository.create(createPointSaleDto);
     return await this.pointSaleRepository.save(point);

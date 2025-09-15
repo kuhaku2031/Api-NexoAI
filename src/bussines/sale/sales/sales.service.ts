@@ -1,26 +1,23 @@
-import { SalesDetailsService } from './../sales-details/sales-details.service';
+import { SalesDetailsService } from '../sales-details/sales-details.service';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Sale } from './entities/sale.entity';
 import { Repository } from 'typeorm';
 import { CreateSaleWithPaymentDto } from './dto/create-sale-with-payment.dto';
-import { PaymentsDetailsService } from 'src/bussines/payment/payments-details/payments-details.service';
-import { Payment } from 'src/bussines/payment/payments/entities/payment.entity';
 import { PointSaleService } from 'src/bussines/pos/point-sale/point-sale.service';
+import { Payment } from 'src/bussines/payment/payments/entities/payment.entity';
+import { PaymentsDetailsService } from 'src/bussines/payment/payments-details/payments-details.service';
 
 @Injectable()
 export class SalesService {
   constructor(
     @InjectRepository(Sale)
     private readonly saleRepository: Repository<Sale>,
-
     private readonly salesDetailsService: SalesDetailsService,
-
     private readonly pointSaleService: PointSaleService,
 
     @InjectRepository(Payment)
     private readonly paymentRepository: Repository<Payment>,
-
     private readonly paymentDetailsService: PaymentsDetailsService,
   ) {}
   async createSale(

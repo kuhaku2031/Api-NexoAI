@@ -1,4 +1,3 @@
-import { Payment } from 'src/bussines/payment/payments/entities/payment.entity';
 import { PointSale } from 'src/bussines/pos/point-sale/entities/point-sale.entity';
 import {
   Column,
@@ -10,6 +9,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { SalesDetail } from '../../sales-details/entities/sales-detail.entity';
+import { Payment } from 'src/bussines/payment/payments/entities/payment.entity';
 
 @Entity()
 export class Sale {
