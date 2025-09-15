@@ -1,0 +1,8 @@
+{
+    // Activa el tema de iconos "A File Icon"
+    "workbench.iconTheme": "a-file-icon-vscode",
+    // Activa el pack de iconos de NestJS
+    "a-file-icon-vscode.activeIconPacks": ["nest"],
+    // Asocia archivos específicos al icono de NestJS
+    // La configuración de asociaciones personalizadas no es compatible directamente aquí.
+}

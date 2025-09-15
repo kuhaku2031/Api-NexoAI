@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID, MinLength } from 'class-validator';
 
 export class CreateAuthDto {
   @IsString()
@@ -20,4 +20,8 @@ export class CreateAuthDto {
   @MinLength(3)
   @IsNotEmpty()
   confirm_password: string;
+
+  @IsNotEmpty()
+  @IsUUID()
+  company_id: number;
 }
