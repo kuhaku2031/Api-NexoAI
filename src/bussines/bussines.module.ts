@@ -6,12 +6,7 @@ import { PosModule } from './pos/pos.module';
 import { CustomersModule } from './customers/customers.module';
 
 @Module({
-
-
     imports: [InventoryModule, SalesModule, PaymentModule, PosModule, CustomersModule],
     exports: [InventoryModule, SalesModule, PaymentModule, PosModule, CustomersModule],
-    controllers: [],
-    providers: [],
-
 })
 export class BussinesModule {}
