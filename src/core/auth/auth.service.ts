@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
@@ -11,12 +11,30 @@ export class AuthService {
     private readonly companiesService: CompaniesService,
   ) {}
 
-  create(createAuthDto: CreateAuthDto) {
-    return this.companiesService.create(createAuthDto.name);
+  async create(createAuthDto: CreateAuthDto) {
+
+      // Create company
+
+      // Check if email is already in use
+      const existingCompany = await this.companiesService.findByEmail(createAuthDto.email);
+
+      if (existingCompany) {
+        throw new BadRequestException('Company already exists with this email');
+      }
+
+      // If not, create the company
+      this.companiesService.create(createAuthDto)
+
+      // Create user
+
+      const ownerCompany = await this.companiesService.create(createAuthDto);
+
+
+      return ;
   }
 
-  login(LoginAuthDto: LoginAuthDto) {
-    return 'This action logs in a user';
+  async login(LoginAuthDto: LoginAuthDto) {
+    return ;
   }
 
   findAll() {

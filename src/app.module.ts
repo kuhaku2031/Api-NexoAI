@@ -18,6 +18,8 @@ import { Sale } from './bussines/sale/sales/entities/sale.entity';
 import { SalesDetail } from './bussines/sale/sales-details/entities/sales-detail.entity';
 import { CommonModule } from './common/common.module';
 import { CoreModule } from './core/core.module';
+import { Company } from './core/companies/entities/company.entity';
+import { User } from './core/users/entities/user.entity';
 
 
 
@@ -40,6 +42,8 @@ import { CoreModule } from './core/core.module';
         Payment,
         PaymentsDetail,
         PaymentsMethod,
+        Company,
+        User
       ],
       autoLoadEntities: true,
       synchronize: true,

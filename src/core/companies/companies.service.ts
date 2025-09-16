@@ -1,24 +1,60 @@
-import { Injectable } from '@nestjs/common';
-import { CreateCompanyDto } from './dto/create-company.dto';
-import { UpdateCompanyDto } from './dto/update-company.dto';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { IdGenerator } from 'src/common/utils/id-generator.util';
+import { Company } from './entities/company.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CreateAuthDto } from '../auth/dto/create-auth.dto';
+import { format } from 'path';
+import { Formatdate } from 'src/common/utils/date.util';
 
 @Injectable()
 export class CompaniesService {
-  create(name: string) {
-    return IdGenerator.generateCompanyId() + "  " + IdGenerator.generateUserId(name);
+  constructor(
+    @InjectRepository(Company)
+    private readonly companyRepository: Repository<Company>,
+  ) {}
+
+  async create(createAuthDto: CreateAuthDto) {
+    try {
+
+      // Create a new company entity
+      const newCompany = this.companyRepository.create({
+        company_id: IdGenerator.generateCompanyId(),
+        company_name: createAuthDto.company_name,
+        business_type: createAuthDto.business_type,
+        email: createAuthDto.email,
+        phone_number: createAuthDto.phone_number,
+        address: createAuthDto.address,
+        city: createAuthDto.city,
+        country: createAuthDto.country,
+        created_at: Formatdate(),
+        updated_at: Formatdate(),
+      });
+
+      // Save the new company to the database
+      await this.companyRepository.save(newCompany);
+
+      return newCompany;
+    } catch (error) {
+      console.error('Error creating company:', error);
+      throw error;
+    }
   }
 
-  findAll() {
-    return `This action returns all companies`;
+  async findAll() {
+    const companies = await this.companyRepository.find();
+    return companies;
+  }
+
+  async findByEmail(email: string) {
+    const emailsInUse = await this.companyRepository.findOne({
+      where: [{ email }],
+    });
+    return emailsInUse;
   }
 
   findOne(id: number) {
     return `This action returns a #${id} company`;
-  }
-
-  update(id: number, updateCompanyDto: UpdateCompanyDto) {
-    return `This action updates a #${id} company`;
   }
 
   remove(id: number) {
