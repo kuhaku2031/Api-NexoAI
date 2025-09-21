@@ -4,6 +4,7 @@ import { AuthController } from './auth.controller';
 import { CompaniesModule } from '../companies/companies.module';
 import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
+import { jwtConstants } from 'src/config/jwt.config';
 
 @Module({
   controllers: [AuthController,],
@@ -13,8 +14,8 @@ import { JwtModule } from '@nestjs/jwt';
     CompaniesModule, 
     UsersModule,
     JwtModule.register({
-      secret: 'yourSecretKey', // Secret Key for signing the token
-      signOptions: { expiresIn: '1h' }, // Token expiration time
+      secret: jwtConstants.secret,
+      signOptions: jwtConstants.signOptions,
     }), 
   ],
 })
