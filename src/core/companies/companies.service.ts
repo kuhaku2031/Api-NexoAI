@@ -14,12 +14,12 @@ export class CompaniesService {
     private readonly companyRepository: Repository<Company>,
   ) {}
 
-  async create(createAuthDto: CreateAuthDto) {
+  async create(createAuthDto: CreateAuthDto, companyID: string): Promise<Company> {
     try {
 
       // Create a new company entity
       const newCompany = this.companyRepository.create({
-        company_id: IdGenerator.generateCompanyId(),
+        company_id: companyID,
         company_name: createAuthDto.company_name,
         business_type: createAuthDto.business_type,
         email: createAuthDto.email,

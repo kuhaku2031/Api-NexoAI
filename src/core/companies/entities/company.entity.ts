@@ -1,4 +1,4 @@
-import { User } from 'src/core/users/entities/user.entity';
+import { Users } from 'src/core/users/entities/user.entity';
 import { Column, Entity, OneToMany, PrimaryColumn, Unique } from 'typeorm';
 
 @Entity()
@@ -12,7 +12,7 @@ export class Company {
   @Column()
   business_type: string;
 
-  @Column(' unique: true ')
+  @Column()
   email: string;
 
   @Column()
@@ -33,6 +33,6 @@ export class Company {
   @Column()
   updated_at: string;
 
-  @OneToMany(() => User, (user) => user.company)
-  users: User[];
+  @OneToMany(() => Users, (users) => users.company)
+  users: Users[];
 }

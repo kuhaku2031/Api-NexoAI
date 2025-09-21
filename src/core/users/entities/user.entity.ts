@@ -7,22 +7,14 @@ export enum UserRole {
 import { Company } from 'src/core/companies/entities/company.entity';
 import {
   Column,
-  CreateDateColumn,
   Entity,
-  ManyToMany,
   ManyToOne,
-  OneToMany,
   PrimaryColumn,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
-export class User {
+export class Users {
   @PrimaryColumn()
-  id: string;
-
-  @Column()
   company_id: string;
 
   @Column({ unique: true })
@@ -32,39 +24,39 @@ export class User {
   password: string; // Hasheado
 
   @Column()
-  firstName: string;
+  first_name: string;
 
   @Column()
-  lastName: string;
+  last_name: string;
 
   @Column()
-  phone_number: string;
+  phone_number: number;
 
   @Column({ type: 'enum', enum: UserRole, default: UserRole.EMPLOYEE })
-  role: 'UserRole';
+  role: UserRole;
 
   @Column({ type: 'boolean', default: true })
   is_active: boolean;
 
-  @CreateDateColumn()
-  created_at: Date;
+  @Column()
+  created_at: string;
 
-  @UpdateDateColumn()
-  updated_at: Date;
+  @Column()
+  updated_at: string;
 
   @ManyToOne(() => Company, (company) => company.users)
   company: Company;
 
-  // Relaciones
-  //   @ManyToMany(() => PointSale, pointSale => pointSale.employees)
-  @Column()
-  pointSales: 'PointSale[]';
+  // // Relaciones
+  // //   @ManyToMany(() => PointSale, pointSale => pointSale.employees)
+  // @Column()
+  // pointSales: 'PointSale[]';
 
-  //   @OneToMany(() => WorkSession, workSession => workSession.user)
-  @Column()
-  workSessions: 'WorkSession[]';
+  // //   @OneToMany(() => WorkSession, workSession => workSession.user)
+  // @Column()
+  // workSessions: 'WorkSession[]';
 
-  //   @OneToMany(() => Sale, sale => sale.createdBy)
-  @Column()
-  sales: 'Sale[]';
+  // //   @OneToMany(() => Sale, sale => sale.createdBy)
+  // @Column()
+  // sales: 'Sale[]';
 }
