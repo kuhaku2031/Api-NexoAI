@@ -5,6 +5,7 @@ import { Users } from './entities/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from 'src/config/jwt.config';
+import { RolesGuard } from 'src/common/guard/roles.guard';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Users]),     JwtModule.register({
@@ -13,6 +14,6 @@ import { jwtConstants } from 'src/config/jwt.config';
       }), ],
   exports: [UsersService],
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, RolesGuard],
 })
 export class UsersModule {}

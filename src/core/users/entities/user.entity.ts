@@ -1,13 +1,9 @@
-export enum UserRole {
-    OWNER = 'OWNER',
-    MANAGER = 'MANAGER',
-    EMPLOYEE = 'EMPLOYEE',
-}
-
+import { UserRole } from 'src/common/enum/role.enum';
 import { Company } from 'src/core/companies/entities/company.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryColumn,
 } from 'typeorm';
@@ -45,6 +41,7 @@ export class Users {
   updated_at: string;
 
   @ManyToOne(() => Company, (company) => company.users)
+  @JoinColumn({ name: 'company_id' })
   company: Company;
 
   // // Relaciones

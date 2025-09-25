@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthGuard } from 'src/common/guard/auth.guard';
+import { UserRole } from 'src/common/enum/role.enum';
+import { Auth } from 'src/common/decorators/auth.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -13,10 +14,10 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @UseGuards(AuthGuard)
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  @Auth(UserRole.OWNER)
+  findAllByCompany(@Req() req) {
+    return this.usersService.findAllByEmail(req.user.company_id);
   }
 
   @Patch(':id')

@@ -6,9 +6,9 @@ import { CompaniesService } from '../companies/companies.service';
 import { UsersService } from '../users/users.service';
 import { IdGenerator } from 'src/common/utils/id-generator.util';
 import { Formatdate } from 'src/common/utils/date.util';
-import { UserRole } from '../users/entities/user.entity';
 import { HashUtil } from 'src/common/utils/hash.util';
 import { JwtService } from '@nestjs/jwt';
+import { UserRole } from 'src/common/enum/role.enum';
 
 @Injectable()
 export class AuthService {
