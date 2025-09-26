@@ -8,10 +8,13 @@ import { jwtConstants } from 'src/config/jwt.config';
 import { RolesGuard } from 'src/common/guard/roles.guard';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Users]),     JwtModule.register({
-        secret: jwtConstants.secret,
-        signOptions: jwtConstants.signOptions,
-      }), ],
+  imports: [
+    TypeOrmModule.forFeature([Users]),
+    JwtModule.register({
+      secret: jwtConstants.secret,
+      signOptions: jwtConstants.signOptions,
+    }),
+  ],
   exports: [UsersService],
   controllers: [UsersController],
   providers: [UsersService, RolesGuard],

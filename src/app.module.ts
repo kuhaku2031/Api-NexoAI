@@ -5,7 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BussinesModule } from './bussines/bussines.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { AiModule } from './ai/ai.module';
-
+import { BillingModule } from './core/billing/billing.module';
+import { CommonModule } from './common/common.module';
+import { CoreModule } from './core/core.module';
 
 //  Import all entities here
 import { Category } from './bussines/inventory/categories/entities/category.entity';
@@ -16,17 +18,17 @@ import { PaymentsDetail } from './bussines/payment/payments-details/entities/pay
 import { PaymentsMethod } from './bussines/payment/payments-methods/entities/payments-method.entity';
 import { Sale } from './bussines/sale/sales/entities/sale.entity';
 import { SalesDetail } from './bussines/sale/sales-details/entities/sales-detail.entity';
-import { CommonModule } from './common/common.module';
-import { CoreModule } from './core/core.module';
 import { Company } from './core/companies/entities/company.entity';
 import { Users } from './core/users/entities/user.entity';
-
+import { Subscription } from './core/billing/suscription/entities/suscription.entity';
+import { SubscriptionPlan } from './core/billing/suscription-plans/entities/suscription-plan.entity';
+import { SubscriptionUsage } from './core/billing/suscription-usage/entities/suscription-usage.entity';
 
 
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
+  TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
       port: 5432,
@@ -34,15 +36,34 @@ import { Users } from './core/users/entities/user.entity';
       password: '1234',
       database: 'postgres',
       entities: [
+
+        // BUSINESs
+        // {inventory}
         Category,
         Product,
-        Sale,
-        SalesDetail,
-        PointSale,
+        
+        // {payment}
         Payment,
         PaymentsDetail,
         PaymentsMethod,
+
+        // {pos}
+        PointSale,
+
+        // {sale}
+        Sale,
+        SalesDetail,
+
+        // CORE 
+        // {billing}
+        Subscription,
+        SubscriptionPlan,
+        SubscriptionUsage,
+
+        // {companies}
         Company,
+
+        // {users}
         Users
       ],
       autoLoadEntities: true,
@@ -55,7 +76,8 @@ import { Users } from './core/users/entities/user.entity';
     AnalyticsModule,
     BussinesModule,
     CommonModule,
-    CoreModule
+    CoreModule,
+    BillingModule
 
   ],
   controllers: [],
