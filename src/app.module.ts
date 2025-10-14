@@ -23,18 +23,22 @@ import { Users } from './core/users/entities/user.entity';
 import { Subscription } from './core/billing/suscription/entities/suscription.entity';
 import { SubscriptionPlan } from './core/billing/suscription-plans/entities/suscription-plan.entity';
 import { SubscriptionUsage } from './core/billing/suscription-usage/entities/suscription-usage.entity';
+import { ConfigModule } from '@nestjs/config';
 
 
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+    }),
   TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: '1234',
-      database: 'postgres',
+      type: process.env.DB_TYPE as any || 'postgres',
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DATABASE_PORT, 10) || 5432,
+      username: process.env.DB_USERNAME ,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
       entities: [
 
         // BUSINESs
