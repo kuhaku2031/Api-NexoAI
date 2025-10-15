@@ -40,6 +40,12 @@ export class Users {
   @Column()
   updated_at: string;
 
+  @Column({ nullable: true })
+  refresh_token: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  refresh_token_expires: Date;
+
   @ManyToOne(() => Company, (company) => company.users)
   @JoinColumn({ name: 'company_id' })
   company: Company;

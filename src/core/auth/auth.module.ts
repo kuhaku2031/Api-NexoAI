@@ -14,8 +14,8 @@ import { jwtConstants } from 'src/config/jwt.config';
     CompaniesModule, 
     UsersModule,
     JwtModule.register({
-      secret: jwtConstants.secret,
-      signOptions: jwtConstants.signOptions,
+      secret: jwtConstants.accessToken.secret,
+      signOptions:{ expiresIn: jwtConstants.accessToken.signOptions },
     }), 
   ],
 })
