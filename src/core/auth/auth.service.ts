@@ -129,6 +129,46 @@ export class AuthService {
     }
   }
 
+  async refreshToken(refreshToken: string) {
+    try {
+      const payload = await this.JwtService.verifyAsync(refreshToken, {
+        secret: jwtConstants.refreshToken.secret,
+      })
+
+      const user = await this.usersService.findOneByEmail(payload.email);
+
+      if (!user || !user.refresh_token) {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+
+      const isRefreshTokenValid = await new HashUtil().compare(
+        refreshToken,
+        user.refresh_token,
+      )
+
+      if (!isRefreshTokenValid) {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+
+      const newAccessToken = await this.JwtService.signAsync({
+        company_id: user.company_id,
+        email: user.email,
+        role: user.role,
+      }, {
+        secret: jwtConstants.accessToken.secret,
+        expiresIn: jwtConstants.accessToken.signOptions,
+      });
+
+      return {
+        access_token: newAccessToken,
+      }
+
+    } catch (error) {
+      console.log(error);
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
+
   findAll() {
     return `This action returns all auth`;
   }
