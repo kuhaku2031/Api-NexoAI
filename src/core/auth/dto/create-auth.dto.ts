@@ -3,6 +3,7 @@ import {
   IsString,
   MaxLength,
   MinLength,
+  Matches,
 } from 'class-validator';
 
 export class CreateAuthDto {
@@ -25,13 +26,13 @@ export class CreateAuthDto {
   email: string;
 
   @IsString()
-  @MinLength(3)
+  @MinLength(8)
   @MaxLength(150)
   @IsNotEmpty()
   password: string;
 
   @IsString()
-  @MinLength(3)
+  @MinLength(8)
   @MaxLength(150)
   @IsNotEmpty()
   confirm_password: string;
@@ -49,10 +50,13 @@ export class CreateAuthDto {
   business_type: string;
 
   @IsString()
-  @MinLength(3)
-  @MaxLength(150)
+  @MinLength(7)
+  @MaxLength(20)
   @IsNotEmpty()
-  phone_number: number;
+  @Matches(/^[+\d][\d\s-]+$/, {
+    message: 'Invalid phone number format',
+  })
+  phone_number: string;
 
   @IsString()
   @MinLength(3)

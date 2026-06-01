@@ -18,12 +18,15 @@ export class SalesDetail {
   @Column({ nullable: false })
   quantity: number;
 
-  @Column({ nullable: false })
+  @Column({ type: 'numeric', precision: 10, scale: 2 })
   selling_price: number;
+
+  @Column()
+  sale_id: number;
 
   @ManyToOne(() => Sale, (sale) => sale.salesDetail)
   @JoinColumn({ name: 'sale_id' })
-  sale: number;
+  sale: Sale;
 
   @Column({ type: 'jsonb' })
   product: any;

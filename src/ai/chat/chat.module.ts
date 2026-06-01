@@ -4,15 +4,15 @@ import { ChatService } from './chat.service';
 import { AiService } from './ai.service';
 import { ChatController } from './chat.controller';
 import { FirestoreModule } from '../firestore/firestore.module';
-import { jwtConstants } from 'src/config/jwt.config';
+import { jwtConfig } from 'src/config/jwt.config';
 import { FirestoreService } from '../firestore/firestore.service';
 
 @Module({
   imports: [
     FirestoreModule,
     JwtModule.register({
-      secret: jwtConstants.accessToken.secret,
-      signOptions: { expiresIn: '1h' },
+      secret: jwtConfig.accessToken.secret,
+      signOptions: { expiresIn: jwtConfig.accessToken.expiresIn },
     }),
   ],
   controllers: [ChatController],

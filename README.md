@@ -1,6 +1,3 @@
-<p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=150&section=header&text=NexoAI%20API&fontSize=50&fontAlignY=40" />
-</p>
 
 <h3 align="center">AI-Powered Multi-Tenant Business Management Platform</h3>
 <p align="center">

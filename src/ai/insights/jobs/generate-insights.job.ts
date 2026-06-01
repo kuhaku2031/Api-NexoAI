@@ -41,7 +41,6 @@ export class GenerateInsightsJob {
       .createQueryBuilder('product')
       .where('product.stock < :threshold', { threshold: 10 })
       .andWhere('product.stock > 0')
-      .setParameter('companyId', companyId)
       .getMany();
 
     if (lowStockProducts.length > 0) {
@@ -55,8 +54,9 @@ export class GenerateInsightsJob {
 
     const todaySales = await this.saleRepository
       .createQueryBuilder('sale')
+      .innerJoin('sale.point_sale', 'pointSale')
       .where('sale.sale_date >= :date', { date: today })
-      .andWhere('sale.company_id = :companyId', { companyId })
+      .andWhere('pointSale.company_id = :companyId', { companyId })
       .getCount();
 
     this.logger.log(`Empresa ${companyId}: ${todaySales} ventas hoy`);

@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
 import { ConversationEmbedding } from './entities/conversation-embedding.entity';
 import { FirestoreService } from '../firestore/firestore.service';
 
@@ -8,8 +9,10 @@ import { FirestoreService } from '../firestore/firestore.service';
 export class EmbeddingsService {
   private readonly logger = new Logger(EmbeddingsService.name);
 
-  private readonly OLLAMA_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
-  private readonly OLLAMA_MODEL = process.env.OLLAMA_EMBED_MODEL || 'nomic-embed-text';
+  private readonly OLLAMA_URL =
+    process.env.OLLAMA_URL || 'http://localhost:11434';
+  private readonly OLLAMA_MODEL =
+    process.env.OLLAMA_EMBED_MODEL || 'nomic-embed-text';
 
   constructor(
     @InjectRepository(ConversationEmbedding)
@@ -30,7 +33,9 @@ export class EmbeddingsService {
 
       if (!response.ok) {
         const error = await response.text();
-        this.logger.error(`Ollama embedding error: ${response.status} - ${error}`);
+        this.logger.error(
+          `Ollama embedding error: ${response.status} - ${error}`,
+        );
         throw new Error(`Failed to generate embedding: ${response.status}`);
       }
 
@@ -79,10 +84,7 @@ export class EmbeddingsService {
       const results = await this.embeddingRepository
         .createQueryBuilder('e')
         .where('e.company_id = :companyId', { companyId })
-        .orderBy(
-          `(e.embedding <-> :embedding::vector)`,
-          'ASC',
-        )
+        .orderBy('e.embedding <=> :embedding::vector', 'ASC')
         .setParameter('embedding', JSON.stringify(queryEmbedding))
         .limit(limit)
         .getMany();
@@ -96,17 +98,21 @@ export class EmbeddingsService {
 
   async archiveOldConversations(daysOld: number = 30): Promise<number> {
     try {
-      const oldConversations = await this.firestoreService.getOldConversations(daysOld);
-      this.logger.log(`Found ${oldConversations.length} conversations to archive`);
+      const oldConversations =
+        await this.firestoreService.getOldConversations(daysOld);
+      this.logger.log(
+        `Found ${oldConversations.length} conversations to archive`,
+      );
 
       let archived = 0;
 
       for (const conv of oldConversations) {
         try {
-          const content = await this.firestoreService.getFullConversationContent(
-            conv.companyId,
-            conv.conversationId,
-          );
+          const content =
+            await this.firestoreService.getFullConversationContent(
+              conv.companyId,
+              conv.conversationId,
+            );
 
           if (content.trim()) {
             const summary = content.substring(0, 200);
@@ -118,11 +124,16 @@ export class EmbeddingsService {
               summary,
             });
 
-            await this.firestoreService.closeConversation(conv.companyId, conv.conversationId);
+            await this.firestoreService.closeConversation(
+              conv.companyId,
+              conv.conversationId,
+            );
             archived++;
           }
         } catch (err) {
-          this.logger.error(`Error archiving conversation ${conv.conversationId}: ${err}`);
+          this.logger.error(
+            `Error archiving conversation ${conv.conversationId}: ${err}`,
+          );
         }
       }
 

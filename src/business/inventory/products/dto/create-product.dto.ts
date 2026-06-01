@@ -35,10 +35,10 @@ export class CreateProductDto {
   @IsNotEmpty()
   selling_price: number;
 
-  @IsString()
+  @Type(() => Number)
+  @IsNumber()
   @IsNotEmpty()
-  @MinLength(2)
-  category: string;
+  category_id: number;
 
   @IsNumber()
   @IsNotEmpty()

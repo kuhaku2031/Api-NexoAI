@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -6,6 +6,8 @@ import { Users } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
+
   constructor(
     @InjectRepository(Users)
     private readonly userRepository: Repository<Users>,
@@ -15,10 +17,10 @@ export class UsersService {
     try {
       const user = this.userRepository.create(createUserDto);
       await this.userRepository.save(user);
-      console.log(user);
+      this.logger.log(`User created: ${user.email}`);
       return user;
     } catch (error) {
-      console.log(error);
+      this.logger.error(`Error creating user: ${error.message}`);
       return error;
     }
   }
@@ -28,21 +30,18 @@ export class UsersService {
   }
 
   async findOneByEmail(email: string) {
-    return await this.userRepository.findOne({ where: { email: email } });
+    return await this.userRepository.findOne({ where: { email } });
   }
 
   async findAllByCompany(company_id: string) {
     return await this.userRepository.find({
-      where: { company_id: company_id },
+      where: { company_id },
     });
   }
 
-  async updateRefreshToken(
-    email: string,
-    expiresAt: string,
-  ) {
+  async updateRefreshToken(email: string, expiresAt: string | null) {
     await this.userRepository.update(
-      { email: email },
+      { email },
       { refresh_token_expires: expiresAt },
     );
   }

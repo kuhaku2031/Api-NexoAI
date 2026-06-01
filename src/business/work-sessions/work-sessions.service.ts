@@ -9,7 +9,6 @@ import { UpdateWorkSessionDto } from './dto/update-work-session.dto';
 import { WorkSession } from './entities/work-session.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Formatdate } from 'src/common/utils/date.util';
 import { Users } from 'src/core/users/entities/user.entity';
 import { Status } from 'src/common/enum/status.enum';
 import { CheckOutDto } from './dto/check-out.dto';
@@ -49,20 +48,17 @@ export class WorkSessionsService {
         throw new NotFoundException('User not found');
       }
 
-      // Close previous work session
       await this.workSessionsRepository.update(
         { user: { user_id: checkInDto.user_id }, status: Status.ACTIVE },
-        { status: Status.FORCE_CLOSED, check_out: Formatdate() },
+        { status: Status.FORCE_CLOSED, check_out: new Date() },
       );
 
-      // Update user status
       await this.usersRepository.update(user.user_id, { is_active: true });
 
-      // Create new work session
-      const workSession = await this.workSessionsRepository.create({
+      const workSession = this.workSessionsRepository.create({
         user: { user_id: checkInDto.user_id },
         company: { company_id: user.company_id },
-        check_in: Formatdate(),
+        check_in: new Date(),
         status: Status.ACTIVE,
         total_time: 0,
       });
@@ -78,7 +74,6 @@ export class WorkSessionsService {
 
   async checkOut(checkOutDto: CheckOutDto) {
     try {
-      // Find user by user_id and retations company
       const user = await this.usersRepository.findOne({
         where: { user_id: checkOutDto.user_id },
         relations: ['company'],
@@ -88,16 +83,36 @@ export class WorkSessionsService {
         throw new NotFoundException('User not found');
       }
 
-      // Update user status
-      await this.usersRepository.update(user.user_id, { is_active: false });
+      const activeSession = await this.workSessionsRepository.findOne({
+        where: {
+          user: { user_id: checkOutDto.user_id },
+          status: Status.ACTIVE,
+        },
+      });
 
-      // Update work session
-      await this.workSessionsRepository.update(
-        { user: { user_id: checkOutDto.user_id }, status: Status.ACTIVE },
-        { status: Status.INACTIVE, check_out: Formatdate() },
+      if (!activeSession) {
+        throw new NotFoundException('No active session found');
+      }
+
+      const checkOutTime = new Date();
+      const checkInTime =
+        activeSession.check_in instanceof Date
+          ? activeSession.check_in
+          : new Date(activeSession.check_in);
+
+      const totalMinutes = Math.floor(
+        (checkOutTime.getTime() - checkInTime.getTime()) / 60000,
       );
 
-      return 'This action checks out a workSession';
+      await this.usersRepository.update(user.user_id, { is_active: false });
+
+      await this.workSessionsRepository.update(activeSession.id, {
+        check_out: checkOutTime,
+        status: Status.INACTIVE,
+        total_time: totalMinutes,
+      });
+
+      return { message: 'Checked out successfully', total_time: totalMinutes };
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;

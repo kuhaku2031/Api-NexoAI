@@ -1,4 +1,5 @@
 import { Payment } from 'src/business/payment/payments/entities/payment.entity';
+import { PaymentsMethod } from 'src/business/payment/payments-methods/entities/payments-method.entity';
 import {
   Column,
   Entity,
@@ -13,12 +14,19 @@ export class PaymentsDetail {
   id: number;
 
   @Column()
-  payment_method: string;
+  payment_method_id: number;
+
+  @ManyToOne(() => PaymentsMethod)
+  @JoinColumn({ name: 'payment_method_id' })
+  paymentMethod: PaymentsMethod;
+
+  @Column({ type: 'numeric', precision: 10, scale: 2 })
+  total_amount: number;
 
   @Column()
-  total_amount: number;
+  payment_id: number;
 
   @ManyToOne(() => Payment, (payment) => payment.paymentsDetail)
   @JoinColumn({ name: 'payment_id' })
-  payment: number;
+  payment: Payment;
 }

@@ -1,13 +1,13 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-export const jwtConstants = {
+export const jwtConfig = {
   accessToken: {
     secret: process.env.JWT_ACCESS_SECRET,
-    signOptions: parseInt(process.env.JWT_ACCESS_EXPIRES_IN || '1h'),
+    expiresIn: (process.env.JWT_ACCESS_EXPIRES_IN || '1h') as any,
   },
   refreshToken: {
-    secret: process.env.JWT_REFRESH_SECRET, // Replace with your own secret key
-    signOptions: parseInt(process.env.JWT_REFRESH_EXPIRES_IN || '1d'), // Token expiration time
+    secret: process.env.JWT_REFRESH_SECRET,
+    expiresIn: (process.env.JWT_REFRESH_EXPIRES_IN || '7d') as any,
   },
 };

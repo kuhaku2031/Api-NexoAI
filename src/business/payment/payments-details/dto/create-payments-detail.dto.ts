@@ -9,10 +9,10 @@ import {
 } from 'class-validator';
 
 export class CreatePaymentsDetailDto {
-  @IsString()
+  @Type(() => Number)
+  @IsNumber()
   @IsNotEmpty()
-  @MinLength(2)
-  payment_method: string;
+  payment_method_id: number;
 
   @Type(() => Number)
   @IsNumber()

@@ -9,14 +9,14 @@ import { PaymentsDetailsModule } from 'src/business/payment/payments-details/pay
 import { SalesDetailsModule } from '../sales-details/sales-details.module';
 import { RolesGuard } from 'src/common/guard/roles.guard';
 import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from 'src/config/jwt.config';
+import { jwtConfig } from 'src/config/jwt.config';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Sale]),
     JwtModule.register({
-      secret: jwtConstants.accessToken.secret,
-      signOptions: { expiresIn: jwtConstants.accessToken.signOptions },
+      secret: jwtConfig.accessToken.secret,
+      signOptions: { expiresIn: jwtConfig.accessToken.expiresIn },
     }),
     SalesDetailsModule,
     PointSaleModule,

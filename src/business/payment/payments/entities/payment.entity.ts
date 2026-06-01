@@ -20,18 +20,18 @@ export class Payment {
   total_amount: number;
 
   @ManyToOne(() => PointSale, (pointSale) => pointSale.sales)
-  @JoinColumn({ name: 'point_sale' })
+  @JoinColumn({ name: 'point_sale_id' })
   point_sale: PointSale;
-
-  @Column({ type: 'jsonb', default: () => "'[]'" })
-  paymentDetail: any[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   payment_date: Date;
 
+  @Column()
+  sale_id: number;
+
   @OneToOne(() => Sale, (sale) => sale.payment)
   @JoinColumn({ name: 'sale_id' })
-  sale_id: number;
+  sale: Sale;
 
   @OneToMany(() => PaymentsDetail, (paymentsDetail) => paymentsDetail.payment)
   paymentsDetail: PaymentsDetail[];

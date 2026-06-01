@@ -21,12 +21,9 @@ export class PointSale {
   address: string;
 
   @OneToMany(() => Sale, (sale) => sale.point_sale)
-  sales: Sale;
+  sales: Sale[];
 
   @ManyToOne(() => Company, (company) => company.point_sales)
   @JoinColumn({ name: 'company_id' })
   company: Company;
-
-  // @OneToMany(() => WorkSession, (workSession) => workSession.point_sale)
-  // work_sessions: WorkSession;
 }

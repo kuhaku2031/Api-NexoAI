@@ -1,7 +1,14 @@
 import { PointSale } from 'src/business/pos/point-sale/entities/point-sale.entity';
 import { WorkSession } from 'src/business/work-sessions/entities/work-session.entity';
 import { Users } from 'src/core/users/entities/user.entity';
-import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Company {
@@ -18,7 +25,7 @@ export class Company {
   email: string;
 
   @Column()
-  phone_number: number;
+  phone_number: string;
 
   @Column()
   address: string;
@@ -29,18 +36,18 @@ export class Company {
   @Column()
   country: string;
 
-  @Column()
-  created_at: string;
+  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  created_at: Date;
 
-  @Column()
-  updated_at: string;
+  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  updated_at: Date;
 
   @OneToMany(() => Users, (users) => users.company)
-  users: Users;
+  users: Users[];
 
   @OneToMany(() => PointSale, (pointSale) => pointSale.company)
-  point_sales: PointSale;
+  point_sales: PointSale[];
 
   @OneToMany(() => WorkSession, (workSession) => workSession.company)
-  work_sessions: WorkSession;
+  work_sessions: WorkSession[];
 }

@@ -22,7 +22,7 @@ export class ConversationEmbedding {
   @Column('text')
   content: string;
 
-  @Column('float', { array: true, default: '{}' })
+  @Column('vector', { length: 768 })
   embedding: number[];
 
   @Column({ nullable: true })

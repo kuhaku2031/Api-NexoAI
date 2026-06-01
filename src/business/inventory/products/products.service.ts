@@ -38,24 +38,23 @@ export class ProductsService {
   async create(createProductDto: CreateProductDto) {
     try {
       const category = await this.categoryRepository.findOne({
-        where: { category_name: createProductDto.category },
+        where: { id: createProductDto.category_id },
       });
 
       if (!category) {
         throw new NotFoundException(
-          `Category ${createProductDto.category} not found`,
+          `Category with id ${createProductDto.category_id} not found`,
         );
       }
 
       const newProduct = this.productRepository.create({
         ...createProductDto,
-        category: category, // 👈 Pasa la entidad completa
+        category: category,
       });
 
       return await this.productRepository.save(newProduct);
     } catch (error) {
       if (error.code === '23505') {
-        // Código de PostgreSQL para unique violation
         throw new ConflictException(
           'El código del producto ya existe. Por favor, elige un código diferente.',
         );
@@ -66,8 +65,10 @@ export class ProductsService {
     }
   }
 
-  async findAllWithFilters(filterProductDto: FilterProductDto): Promise<PaginatedResponse<Product>> {
-        const { 
+  async findAllWithFilters(
+    filterProductDto: FilterProductDto,
+  ): Promise<PaginatedResponse<Product>> {
+    const {
       page = 1,
       limit = 20,
       search,
@@ -80,8 +81,8 @@ export class ProductsService {
     } = filterProductDto;
 
     const queryBuilder = this.productRepository
-    .createQueryBuilder('product')
-    .leftJoinAndSelect('product.category', 'category');
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.category', 'category');
 
     if (search) {
       queryBuilder.andWhere(
@@ -91,14 +92,19 @@ export class ProductsService {
     }
 
     if (categories && categories.length > 0) {
-      queryBuilder.andWhere('category.category_name IN (:...categories)', {categories})
-  }
+      queryBuilder.andWhere('category.id IN (:...categories)', { categories });
+    }
+
     if (min_price !== undefined) {
-      queryBuilder.andWhere('product.selling_price >= :minPrice', { min_price });
+      queryBuilder.andWhere('product.selling_price >= :minPrice', {
+        minPrice: min_price,
+      });
     }
 
     if (max_price !== undefined) {
-      queryBuilder.andWhere('product.selling_price <= :maxPrice', { max_price });
+      queryBuilder.andWhere('product.selling_price <= :maxPrice', {
+        maxPrice: max_price,
+      });
     }
 
     if (stock_status) {
@@ -136,8 +142,8 @@ export class ProductsService {
     };
   }
 
-  async searchProduct(SearchProductDto: SearchProductDto) {
-    const { search_term } = SearchProductDto;
+  async searchProduct(searchProductDto: SearchProductDto) {
+    const { search_term } = searchProductDto;
 
     const products = await this.productRepository.find({
       where: [{ name: Like(`%${search_term}%`) }],
@@ -149,10 +155,6 @@ export class ProductsService {
   async findOne(id: number): Promise<Product> {
     return await this.productRepository.findOne({ where: { id } });
   }
-
-  // update(id: number, updateProductDto: UpdateProductDto) {
-  //   return this.productRepository.update(id, updateProductDto);
-  // }
 
   remove(id: number) {
     return this.productRepository.delete(id);

@@ -1,5 +1,5 @@
 import { SalesDetailsService } from '../sales-details/sales-details.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Sale } from './entities/sale.entity';
 import { Repository } from 'typeorm';
@@ -10,6 +10,8 @@ import { PaymentsDetailsService } from 'src/business/payment/payments-details/pa
 
 @Injectable()
 export class SalesService {
+  private readonly logger = new Logger(SalesService.name);
+
   constructor(
     @InjectRepository(Sale)
     private readonly saleRepository: Repository<Sale>,
@@ -37,7 +39,6 @@ export class SalesService {
     try {
       return await this.saleRepository.manager.transaction(
         async (transactionalEntityManager) => {
-          // Buscar la entidad PointSale
           const pointSaleEntity = await this.pointSaleService.findOnePointSale(
             saleData.point_sale,
           );
@@ -46,20 +47,17 @@ export class SalesService {
             throw new Error('PointSale not found');
           }
 
-          // Crear la venta
           const sale = this.saleRepository.create({
             ...saleData,
             point_sale: pointSaleEntity,
-            product: saleData.product,
           });
           await transactionalEntityManager.save(sale);
 
-          // Crear los detalles de la venta
           const salesDetailsDtos = saleData.product.map((product) => ({
             code: product.code,
             quantity: product.quantity,
             selling_price: product.selling_price,
-            sale: sale.sale_id,
+            sale_id: sale.sale_id,
             product: product,
           }));
 
@@ -78,20 +76,18 @@ export class SalesService {
             throw new Error('Sale not found');
           }
 
-          // Crear el pago
           const payment = this.paymentRepository.create({
-            ...paymentData,
+            total_amount: paymentData.total_amount,
             point_sale: pointSaleEntity,
-            sale_id: sale.sale_id,
-            paymentDetail: paymentData.paymentDetail,
+            sale: sale,
           });
           await transactionalEntityManager.save(payment);
 
-          const paymentDetailsDtos = payment.paymentDetail.map(
+          const paymentDetailsDtos = paymentData.paymentDetail.map(
             (paymentDetail) => ({
-              payment_method: paymentDetail.payment_method,
+              payment_method_id: paymentDetail.payment_method_id,
               total_amount: paymentDetail.total_amount,
-              payment: payment.payment_id,
+              payment_id: payment.payment_id,
             }),
           );
 
@@ -104,7 +100,7 @@ export class SalesService {
         },
       );
     } catch (error) {
-      console.error(error);
+      this.logger.error(`Error creating sale: ${error.message}`);
       throw new Error('Error creating sale');
     }
   }
@@ -116,12 +112,12 @@ export class SalesService {
       });
 
       if (!sale) {
-        throw new Error(`Sale with id ${sale_id} not found`);
+        throw new NotFoundException(`Sale with id ${sale_id} not found`);
       }
 
       return await this.saleRepository.update(sale_id, sale);
     } catch (error) {
-      console.error(error);
+      this.logger.error(`Error updating sale: ${error.message}`);
       throw new Error('Error updating sale');
     }
   }
@@ -133,7 +129,7 @@ export class SalesService {
       });
 
       if (!sale) {
-        throw new Error(`Sale with id ${sale_id} not found`);
+        throw new NotFoundException(`Sale with id ${sale_id} not found`);
       }
 
       const saleDetail = await this.salesDetailsService.getSalesDetail({
@@ -141,14 +137,14 @@ export class SalesService {
       });
 
       if (!saleDetail) {
-        throw new Error(`Sale with id ${sale_id} not found`);
+        throw new NotFoundException(`Sale with id ${sale_id} not found`);
       }
 
       await this.salesDetailsService.removeSaleDetail(saleDetail);
 
       return await this.saleRepository.remove(sale);
     } catch (error) {
-      console.error(error);
+      this.logger.error(`Error removing sale: ${error.message}`);
       throw new Error('Error removing sale');
     }
   }

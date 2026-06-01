@@ -23,18 +23,15 @@ export class Sale {
   @JoinColumn({ name: 'point_sale_id' })
   point_sale: PointSale;
 
-  @Column({ nullable: false })
+  @Column({ type: 'numeric', precision: 10, scale: 2 })
   total_amount: number;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   sale_date: Date;
 
-  @Column({ type: 'jsonb', default: () => "'[]'" })
-  product: any[];
-
   @OneToMany(() => SalesDetail, (salesDetail) => salesDetail.sale)
   salesDetail: SalesDetail[];
 
-  @OneToOne(() => Payment, (payment) => payment.sale_id)
+  @OneToOne(() => Payment, (payment) => payment.sale)
   payment: Payment;
 }

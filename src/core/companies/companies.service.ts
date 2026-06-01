@@ -1,12 +1,13 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { Company } from './entities/company.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateAuthDto } from '../auth/dto/create-auth.dto';
-import { Formatdate } from 'src/common/utils/date.util';
 
 @Injectable()
 export class CompaniesService {
+  private readonly logger = new Logger(CompaniesService.name);
+
   constructor(
     @InjectRepository(Company)
     private readonly companyRepository: Repository<Company>,
@@ -14,7 +15,6 @@ export class CompaniesService {
 
   async create(createAuthDto: CreateAuthDto, companyID: string) {
     try {
-      // Create a new company entity
       const newCompany = this.companyRepository.create({
         company_id: companyID,
         company_name: createAuthDto.company_name,
@@ -24,15 +24,13 @@ export class CompaniesService {
         address: createAuthDto.address,
         city: createAuthDto.city,
         country: createAuthDto.country,
-        created_at: Formatdate(),
-        updated_at: Formatdate(),
       });
 
-      // Save the new company to the database
       await this.companyRepository.save(newCompany);
 
       return newCompany;
     } catch (error) {
+      this.logger.error(`Error creating company: ${error.message}`);
       throw new BadRequestException(error.message);
     }
   }

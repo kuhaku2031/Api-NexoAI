@@ -1,5 +1,4 @@
 import { Company } from 'src/core/companies/entities/company.entity';
-
 import { Users } from 'src/core/users/entities/user.entity';
 import {
   Column,
@@ -23,15 +22,15 @@ export class WorkSession {
   @JoinColumn({ name: 'company_id' })
   company: Company;
 
-  @Column()
-  check_in: string;
+  @Column({ type: 'timestamp', nullable: true })
+  check_in: Date;
 
-  @Column({ nullable: true })
-  check_out: string;
+  @Column({ type: 'timestamp', nullable: true })
+  check_out: Date | null;
 
   @Column({ type: 'enum', enum: Status, default: Status.INACTIVE })
   status: Status;
 
-  @Column()
+  @Column({ default: 0 })
   total_time: number;
 }

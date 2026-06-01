@@ -1,5 +1,7 @@
-import * as bcrypt from 'bcrypt';
+import { Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcryptjs';
 
+@Injectable()
 export class HashUtil {
   private readonly saltRounds = 10;
 

@@ -5,6 +5,6 @@ export class PaymentsMethod {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ unique: true })
   method_name: string;
 }

@@ -43,7 +43,7 @@ export class ChatController {
     private readonly chatService: ChatService,
     private readonly aiService: AiService,
     private readonly firestoreService: FirestoreService,
-  ) {}
+  ) { }
 
   @Post('conversations')
   async createConversation(@Req() req: AuthenticatedRequest) {

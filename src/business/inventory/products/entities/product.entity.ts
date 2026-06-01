@@ -24,8 +24,11 @@ export class Product {
   @Column({ type: 'numeric', precision: 10, scale: 2 })
   selling_price: number;
 
+  @Column()
+  category_id: number;
+
   @ManyToOne(() => Category, (category) => category.products)
-  @JoinColumn({ name: 'category_name' })
+  @JoinColumn({ name: 'category_id' })
   category: Category;
 
   @Column()

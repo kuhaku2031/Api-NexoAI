@@ -5,6 +5,7 @@ import {
   IsString,
   MaxLength,
   MinLength,
+  IsOptional,
 } from 'class-validator';
 import { UserRole } from 'src/common/enum/role.enum';
 
@@ -46,22 +47,16 @@ export class CreateUserDto {
   last_name: string;
 
   @IsString()
-  @MinLength(3)
-  @MaxLength(150)
-  @IsNotEmpty()
-  phone_number: number;
+  @MinLength(7)
+  @MaxLength(20)
+  @IsOptional()
+  phone_number?: string;
 
   @IsEnum(UserRole)
-  role: UserRole;
+  @IsOptional()
+  role?: UserRole;
 
   @IsBoolean()
-  is_active: boolean;
-
-  @IsString()
-  @IsNotEmpty()
-  created_at: string;
-
-  @IsString()
-  @IsNotEmpty()
-  updated_at: string;
+  @IsOptional()
+  is_active?: boolean;
 }
